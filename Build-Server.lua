@@ -16,7 +16,7 @@ workspace "Cubed-Server"
 
 -- Directories
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
-WalnutNetworkingBinDir = "Walnut/Walnut-Modules/Walnut-Networking/vendor/GameNetworkingSockets"
+WalnutNetworkingBinDir = "Walnut/Walnut-Modules/Walnut-Networking/vendor/GameNetworkingSockets/bin/%{cfg.system}/%{cfg.buildcfg}/"
 
 include "Walnut/Build-Walnut-Headless-External.lua"
 
