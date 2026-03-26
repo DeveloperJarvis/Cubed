@@ -39,3 +39,15 @@
 
 # debug information files
 *.dwo
+
+# code
+dump_project_code_visual_studio_cpp.py
+vs_code_dump.txt
+.env
+
+# folder
+.vs
+bin
+bin-int
+
+# https://youtu.be/W1MSxy90BLg : 17:08

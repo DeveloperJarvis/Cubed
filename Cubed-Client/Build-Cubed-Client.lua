@@ -1,4 +1,4 @@
-project "CubedApp"
+project "Cubed-Client"
    kind "ConsoleApp"
    language "C++"
    cppdialect "C++20"
@@ -9,26 +9,27 @@ project "CubedApp"
 
    includedirs
    {
-      "../Cubed-Common/Source"
+      "../Cubed-Common/Source",
 
       "../Walnut/vendor/imgui",
       "../Walnut/vendor/glfw/include",
-
+      "../Walnut/vendor/glm",
+      "../Walnut/vendor/spdlog/include",
+      
       "../Walnut/Walnut/Source",
       "../Walnut/Walnut/Platform/GUI",
 
       "%{IncludeDir.VulkanSDK}",
-      "%{IncludeDir.glm}",
 
       -- Walnut-Networking
-      "../Walnut/Walnut-Modules/Walnut-Networking/Source"
+      "../Walnut/Walnut-Modules/Walnut-Networking/Source",
       "../Walnut/Walnut-Modules/Walnut-Networking/vendor/GameNetworkingSockets/include"
    }
 
     links
     {
-      "App-Common",
-      "Walnut"
+        "Cubed-Common",
+        "Walnut"
     }
 
    targetdir ("../bin/" .. outputdir .. "/%{prj.name}")
@@ -38,8 +39,8 @@ project "CubedApp"
       systemversion "latest"
       defines { "WL_PLATFORM_WINDOWS" }
       buildoptions { "/utf-8" }
-   
-   postbuildcommands 
+
+      postbuildcommands 
       {
         '{COPY} "../%{WalnutNetworkingBinDir}/GameNetworkingSockets.dll" "%{cfg.targetdir}"',
         '{COPY} "../%{WalnutNetworkingBinDir}/libcrypto-3-x64.dll" "%{cfg.targetdir}"',

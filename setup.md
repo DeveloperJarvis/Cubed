@@ -15,3 +15,9 @@ Using [Walnut - Chat](https://github.com/TheCherno/Walnut-Chat):
 ```md
 https://github.com/TheCherno/Walnut-Chat
 ```
+
+To rebuild app in Visual Studio:
+
+```md
+Ctrl + Shft + b
+```

@@ -1,8 +1,8 @@
 -- Build.lua
-workspace "Cubed"
+workspace "Cubed-Client"
     architecture "x64"
     configurations {"Debug", "Release", "Dist"}
-    startproject "Cubed"
+    startproject "Cubed-Client"
 
     -- Workspace-wide build options for MSVC
     filter "system:windows"
