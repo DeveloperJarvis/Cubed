@@ -78,7 +78,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WL_PLATFORM_WINDOWS;WL_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>IMGUI_DEFINE_MATH_OPERATORS;WL_PLATFORM_WINDOWS;WL_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Cubed-Common\Source;..\Walnut\vendor\imgui;..\Walnut\vendor\glfw\include;..\Walnut\vendor\glm;..\Walnut\vendor\spdlog\include;..\Walnut\Walnut\Source;..\Walnut\Walnut\Platform\GUI;C:\VulkanSDK\1.4.335.0\Include;..\Walnut\Walnut-Modules\Walnut-Networking\Source;..\Walnut\Walnut-Modules\Walnut-Networking\vendor\GameNetworkingSockets\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -101,7 +101,7 @@ IF EXIST "..\Walnut\Walnut-Modules\Walnut-Networking\vendor\GameNetworkingSocket
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WL_PLATFORM_WINDOWS;WL_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>IMGUI_DEFINE_MATH_OPERATORS;WL_PLATFORM_WINDOWS;WL_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Cubed-Common\Source;..\Walnut\vendor\imgui;..\Walnut\vendor\glfw\include;..\Walnut\vendor\glm;..\Walnut\vendor\spdlog\include;..\Walnut\Walnut\Source;..\Walnut\Walnut\Platform\GUI;C:\VulkanSDK\1.4.335.0\Include;..\Walnut\Walnut-Modules\Walnut-Networking\Source;..\Walnut\Walnut-Modules\Walnut-Networking\vendor\GameNetworkingSockets\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Full</Optimization>
@@ -130,7 +130,7 @@ IF EXIST "..\Walnut\Walnut-Modules\Walnut-Networking\vendor\GameNetworkingSocket
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WL_PLATFORM_WINDOWS;WL_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>IMGUI_DEFINE_MATH_OPERATORS;WL_PLATFORM_WINDOWS;WL_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>..\Cubed-Common\Source;..\Walnut\vendor\imgui;..\Walnut\vendor\glfw\include;..\Walnut\vendor\glm;..\Walnut\vendor\spdlog\include;..\Walnut\Walnut\Source;..\Walnut\Walnut\Platform\GUI;C:\VulkanSDK\1.4.335.0\Include;..\Walnut\Walnut-Modules\Walnut-Networking\Source;..\Walnut\Walnut-Modules\Walnut-Networking\vendor\GameNetworkingSockets\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
@@ -156,6 +156,14 @@ IF EXIST "..\Walnut\Walnut-Modules\Walnut-Networking\vendor\GameNetworkingSocket
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Source\ClientLayer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\ClientLayer.cpp">
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
     <ClCompile Include="Source\CubedApp.cpp">
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
