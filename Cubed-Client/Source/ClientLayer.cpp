@@ -7,16 +7,16 @@
 #include "imgui_internal.h"
 #include "misc/cpp/imgui_stdlib.h"
 
+#include "Walnut/Serialization/BufferStream.h"
+
+#include "ServerPacket.h"
+
+
+
 namespace Cubed
 {
-    static void DrawRec(float x, float y, float width, float height, uint32_t color)
-    {
-        ImDrawList* drawList = ImGui::GetBackgroundDrawList();
-        ImVec2 min = ImGui::GetWindowPos() + ImVec2(x, y);
-        ImVec2 max = min + ImVec2(width, height);
+    static Walnut::Buffer s_ScratchBuffer;
 
-        drawList->AddRectFilled(min, max, color);
-    }
     static void DrawRect(glm::vec2 position, glm::vec2 size, uint32_t color)
     {
         ImDrawList* drawList = ImGui::GetBackgroundDrawList();
@@ -29,6 +29,8 @@ namespace Cubed
 
     void ClientLayer::OnAttach()
     {
+        s_ScratchBuffer.Allocate(10 * 1024 * 1024);		// 10 MB
+
         m_Client.SetDataReceivedCallback([this](const Walnut::Buffer buffer) { OnDataReceived(buffer); });
     }
     void ClientLayer::OnDetach()
@@ -62,6 +64,12 @@ namespace Cubed
         m_PlayerPosition += m_PlayerVelocity * ts;
 
         m_PlayerVelocity = glm::mix(m_PlayerVelocity, glm::vec2(0.0f), 5.0f * ts);
+
+        Walnut::BufferStreamWriter stream(s_ScratchBuffer);
+        stream.WriteRaw(PacketType::ClientUpdate);
+        stream.WriteRaw<glm::vec2>(m_PlayerPosition);
+        stream.WriteRaw<glm::vec2>(m_PlayerVelocity);
+        m_Client.SendBuffer(stream.GetBuffer());
     }
     void ClientLayer::OnRender()
     {
@@ -73,6 +81,18 @@ namespace Cubed
         {
             // play game
             DrawRect(m_PlayerPosition, { 50.0f, 50.0f }, 0xffff00ff);
+
+            m_PlayerDataMutex.lock();
+            std::map<uint32_t, PlayerData> playerData = m_PlayerData;
+            m_PlayerDataMutex.unlock();
+
+            for (const auto [id, data] : playerData)
+            {
+                if (id == m_PlayerID)
+                    continue;
+
+                DrawRect(data.Position, { 50.0f, 50.0f }, 0xff00ff00);
+            }
         }
         else 
         {
@@ -95,6 +115,27 @@ namespace Cubed
 
     void ClientLayer::OnDataReceived(const Walnut::Buffer buffer)
     {
+        Walnut::BufferStreamReader stream(buffer);
 
+        PacketType type;
+        stream.ReadRaw(type);
+        switch (type)
+        {
+        case PacketType::ClientConnect:
+            uint32_t idFromServer;
+            stream.ReadRaw<uint32_t>(idFromServer);
+            //WL_INFO("We have connected! Server says our ID is {}", idFromServer);
+            //WL_INFO("We say our ID is {}", m_Client.GetID());
+            m_PlayerID = idFromServer;
+            break;
+
+        case PacketType::ClientUpdate:
+
+            m_PlayerDataMutex.lock();
+            stream.ReadMap(m_PlayerData);
+            m_PlayerDataMutex.unlock();
+
+            break;
+        }
     }
 }
