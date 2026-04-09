@@ -11,7 +11,7 @@
 
 #include "ServerPacket.h"
 
-
+#include "vulkan/vulkan.h"
 
 namespace Cubed
 {
@@ -32,6 +32,8 @@ namespace Cubed
         s_ScratchBuffer.Allocate(10 * 1024 * 1024);		// 10 MB
 
         m_Client.SetDataReceivedCallback([this](const Walnut::Buffer buffer) { OnDataReceived(buffer); });
+
+        m_Renderer.Init();
     }
     void ClientLayer::OnDetach()
     {
@@ -73,6 +75,12 @@ namespace Cubed
     }
     void ClientLayer::OnRender()
     {
+        // Let's draw some stuff here
+        // 1. bind pipeline
+        // 2. bind vertex/index buffers
+        // 3. draw call
+
+        m_Renderer.Render();
     }
     void ClientLayer::OnUIRender()
     {

@@ -27,3 +27,25 @@ F5
    1. Make sure Vulkan SDK is installed on device
    2. Add to System Variables: VULKAN_SDK
    3. Rerun Setup.bat > Reload All
+
+## Vulkan Docs
+
+```bash
+https://docs.vulkan.org/spec/latest/
+```
+
+## glslangValidator
+
+```bash
+# in cmd
+cd Cubed\Cubed-Client\Assets\Shaders
+glslangValidator
+glslangValidator -V
+
+# for vert
+>glslangValidator -V -o bin/basic.vert.spirv basic.vert.glsl
+# for frag
+>glslangValidator -V -o bin/basic.frag.spirv basic.frag.glsl
+```
+
+Created `Compile.bat` for same in the Shaders folder
