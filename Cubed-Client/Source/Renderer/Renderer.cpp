@@ -62,7 +62,7 @@ namespace Cubed {
 
 		// Draw three vertices with one instance from the currently bound vertex bound.
 		//vkCmdDraw(commandBuffer, 3, 1, 0, 0);
-		vkCmdDrawIndexed(commandBuffer, 3, 1, 0, 0, 0);
+		vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
 	}
 
 	void Renderer::InitPipeline()
@@ -231,12 +231,13 @@ namespace Cubed {
 	{
 		VkDevice device = GetVulkanInfo()->Device;
 		
-		glm::vec3 vertexData[3] = {
+		glm::vec3 vertexData[4] = {
 			glm::vec3(-0.5f, -0.5f, 0.0f),
 			glm::vec3(-0.5f,  0.5f, 0.0f),
-			glm::vec3( 0.5f,  0.5f, 0.0f)
+			glm::vec3( 0.5f,  0.5f, 0.0f),
+			glm::vec3( 0.5f, -0.5f, 0.0f)
 		};
-		uint32_t indices[3] = { 0, 1, 2 };
+		uint32_t indices[6] = { 0, 1, 2, 2, 3, 0 };
 
 		m_VertexBuffer.Usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 		CreateOrResizeBuffer(m_VertexBuffer, sizeof(vertexData));
