@@ -3,6 +3,8 @@
 #include "Walnut/Application.h"
 #include "Walnut/Core/Log.h"
 
+#include "glm/gtc/matrix_transform.hpp"
+
 #include <array>
 #include <fstream>
 
@@ -34,8 +36,27 @@ namespace Cubed {
 		VkCommandBuffer commandBuffer = Walnut::Application::GetActiveCommandBuffer();
 		auto wd = Walnut::Application::GetMainWindowData();
 
+		float viewPortWidth = (float)wd->Width;
+		float viewPortHeight = (float)wd->Height;
+
 		// Bind the graphics pipeline.
 		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, m_GraphicsPipeline);
+
+		//glm::vec4 color(1.0f, 0.0f, 1.0f, 1.0f);
+		//vkCmdPushConstants(commandBuffer, m_PipelineLayout, VK_SHADER_STAGE_FRAGMENT_BIT, 0, sizeof(glm::vec4), &color);
+		struct PushConstants
+		{
+			glm::mat4 ViewProjection;
+			glm::mat4 Transform;
+		} pushConstants;
+
+		glm::mat4 cameraTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 3.0f));
+
+		pushConstants.ViewProjection = glm::perspectiveFov(glm::radians(45.0f), viewPortWidth, viewPortHeight, 0.1f, 1000.0f)
+			* glm::inverse(cameraTransform);
+		pushConstants.Transform = glm::mat4(1.0f);
+
+		vkCmdPushConstants(commandBuffer, m_PipelineLayout, VK_SHADER_STAGE_VERTEX_BIT, 0, sizeof(PushConstants), &pushConstants);
 
 		VkDeviceSize offset{ 0 };
 
@@ -44,9 +65,9 @@ namespace Cubed {
 		vkCmdBindIndexBuffer(commandBuffer, m_IndexBuffer.Handle, offset, VK_INDEX_TYPE_UINT32);
 
 		VkViewport vp{
-			.y = (float)wd->Height,
-			.width = (float)wd->Width,
-			.height = -(float)wd->Height,
+			.y = viewPortHeight,
+			.width = viewPortWidth,
+			.height = -viewPortHeight,
 			.minDepth = 0.0f,
 			.maxDepth = 1.0f };
 		// Set viewport dynamically
@@ -62,7 +83,7 @@ namespace Cubed {
 
 		// Draw three vertices with one instance from the currently bound vertex bound.
 		//vkCmdDraw(commandBuffer, 3, 1, 0, 0);
-		vkCmdDrawIndexed(commandBuffer, 6, 1, 0, 0, 0);
+		vkCmdDrawIndexed(commandBuffer, 36, 1, 0, 0, 0);
 	}
 
 	void Renderer::InitPipeline()
@@ -71,10 +92,19 @@ namespace Cubed {
 
 		VkRenderPass renderPass = Walnut::Application::GetMainWindowData()->RenderPass;
 
+		std::array<VkPushConstantRange, 1> pushConstantRanges;
+		pushConstantRanges[0].offset = 0;
+		//pushConstantRanges[0].size = sizeof(glm::vec4);
+		pushConstantRanges[0].size = sizeof(glm::mat4) * 2;
+		//pushConstantRanges[0].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		pushConstantRanges[0].stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+
 		// Create a blank pipeline layout.
-	// We are not binding any resources to the pipeline in this first sample.
+		// We are not binding any resources to the pipeline in this first sample.
 		VkPipelineLayoutCreateInfo layout_info{
 			.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO };
+		layout_info.pPushConstantRanges = pushConstantRanges.data();
+		layout_info.pushConstantRangeCount = (uint32_t)pushConstantRanges.size();
 		VK_CHECK(vkCreatePipelineLayout(device, &layout_info, nullptr, &m_PipelineLayout));
 
 		// The Vertex input properties define the interface between the vertex buffer and the vertex shader.
@@ -130,14 +160,21 @@ namespace Cubed {
 		// Specify rasterization state.
 		VkPipelineRasterizationStateCreateInfo raster{
 			.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-			.pNext = nullptr,
-			.cullMode = VK_CULL_MODE_BACK_BIT,
+			//.pNext = nullptr,
+			//.flags = 0,
+			//.depthClampEnable = VK_FALSE,
+			//.rasterizerDiscardEnable = VK_FALSE,
+			//.polygonMode = VK_POLYGON_MODE_FILL,
+			//.cullMode = VK_CULL_MODE_BACK_BIT,
+			.cullMode = VK_CULL_MODE_NONE,
 			.frontFace = VK_FRONT_FACE_CLOCKWISE,
 			//.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE,
-			.lineWidth = 1.0f };
+			.lineWidth = 1.0f,
+		};
 
 		// Our attachment will write to all color channels, but no blending is enabled.
 		VkPipelineColorBlendAttachmentState blend_attachment{
+			.blendEnable = VK_FALSE,
 			.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT };
 
 		VkPipelineColorBlendStateCreateInfo blend{
@@ -231,13 +268,28 @@ namespace Cubed {
 	{
 		VkDevice device = GetVulkanInfo()->Device;
 		
-		glm::vec3 vertexData[4] = {
-			glm::vec3(-0.5f, -0.5f, 0.0f),
-			glm::vec3(-0.5f,  0.5f, 0.0f),
-			glm::vec3( 0.5f,  0.5f, 0.0f),
-			glm::vec3( 0.5f, -0.5f, 0.0f)
+		glm::vec3 vertexData[8] = {
+			glm::vec3(-0.5f, -0.5f, -0.5f),
+			glm::vec3(-0.5f,  0.5f, -0.5f),
+			glm::vec3( 0.5f,  0.5f, -0.5f),
+			glm::vec3( 0.5f, -0.5f, -0.5f),
+
+			glm::vec3( 0.5f, -0.5f,  0.5f),
+			glm::vec3( 0.5f,  0.5f,  0.5f),
+			glm::vec3(-0.5f,  0.5f,  0.5f),
+			glm::vec3(-0.5f, -0.5f,  0.5f)
 		};
-		uint32_t indices[6] = { 0, 1, 2, 2, 3, 0 };
+		// We can have as many indices as we want, but their values must be larger than the last vertex in our vertex array, which is 7 in this case
+		// back face culling is enabled/ ON, so we need to specify the vertices in clockwise order
+		// NOTE: Winding order is clockwise here
+		uint32_t indices[36] = {
+			0, 1, 2, 2, 3, 0,	// Front
+			3, 2, 5, 5, 4, 3,	// Right
+			4, 5, 6, 6, 7, 4,	// Back
+			7, 6, 1, 1, 0, 7,	// Left
+			1, 6, 5, 5, 2, 1,	// Top
+			7, 0, 3, 3, 4, 7	// Bottom
+		};
 
 		m_VertexBuffer.Usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT;
 		CreateOrResizeBuffer(m_VertexBuffer, sizeof(vertexData));

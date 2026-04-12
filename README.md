@@ -49,3 +49,14 @@ glslangValidator -V
 ```
 
 Created `Compile.bat` for same in the Shaders folder
+
+## Graphics Debugging
+
+You could use [Render Doc](https://renderdoc.org)
+
+1. Setup `Executable Path`
+2. Setup `Working directory` from solution
+3. Click `Launch`
+4. Project will load, take screenshot using `F12` then close it
+5. Under `Event Browser` goto `vkCmdDrawIndexed`
+6. Click `Mesh Viewer` you could see that actually
