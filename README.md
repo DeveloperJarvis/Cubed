@@ -1,5 +1,14 @@
 # Cubed
 
+## Fresh run
+
+```bash
+# in scripts folder run
+Setup.bat
+# In Cubed-Client\Assets\Shaders run
+Compile.bat
+```
+
 ### Build in Visual Studio
 
 ```bash
